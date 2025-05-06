@@ -31,7 +31,8 @@ public class KafkaJsonProducer implements CommandLineRunner {
     private static final String TOPIC = "sensor-data";
     private static final ObjectMapper mapper = new ObjectMapper();
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws InterruptedException {
+        Thread.sleep(10000);
         // Create topic if it doesn't exist
         createTopic();
 
@@ -44,7 +45,7 @@ public class KafkaJsonProducer implements CommandLineRunner {
         // Create the producer
         KafkaProducer<String, String> producer = new KafkaProducer<>(props);
 
-        // Generate and send sample messages
+        // Generate and send sample messages, increase i to desired message count
         try {
             for (int i = 0; i < 5; i++) {
                 String message = createSampleMessage(i%5 + 1, i);
@@ -56,7 +57,7 @@ public class KafkaJsonProducer implements CommandLineRunner {
                 System.out.printf("Sent message: %s | Partition: %d | Offset: %d%n",
                         message, metadata.partition(), metadata.offset());
 
-                Thread.sleep(100); // Small delay between messages
+                Thread.sleep(10); // Small delay between messages
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,6 +65,7 @@ public class KafkaJsonProducer implements CommandLineRunner {
             producer.close();
         }
     }
+
 
     private  void createTopic() {
         Properties props = new Properties();
